@@ -1,0 +1,14 @@
+[1] Mahmood, M., and Osama Ibraheem Ashour Ashour. "Web Application Based on MVC Laravel Architecture for Online Shops." Proceedings of the 6th International Conference on Engineering & MIS 2020 (2020).
+[2] Zhang, Dandan, Zhiqiang Wei, and Yongquan Yang. "Research on Lightweight MVC Framework Based on Spring MVC and Mybatis." 2013 Sixth International Symposium on Computational Intelligence and Design (2013).
+[3] 叶方超,张思扬,李传锴.基于SpringBoot的旧物回收商城的设计与实现[J].智能计算机与应用,2019,9(05):84-86.
+[4] 贾志勇. 基于SpringBoot的下沉市场交易平台的设计与实现[D].安徽大学,2020. 
+[5] 耿庆阳. 基于Spring Boot与Vue的电子商城设计与实现[D].西安石油大学,2020.
+[6] 陈冰. 基于SpringBoot的校园二手商品交易系统的设计与实现[D].华中师范大学,2021.
+[7] 刘敏. 基于SpringBoot框架社交网络平台的设计与实现[D].湖南大学,2018.
+[8] 朱重佳. 基于SSM框架的网购商城的设计与实现[D].北京交通大学,2018.
+[9] 陈宇.基于Spring Boot的电商管理系统的设计[J].现代信息科技,2020,4(01):25-26. 
+[10]李晨. 基于Spring Boot的电子商城设计与实现[D].哈尔滨工业大学,2020. 
+[11]付博. 基于SpringCloud的绿植养护软件的设计与实现[D].北京邮电大学,2021. 
+[12]滕飞.基于Spring MVC的大数据交易集市平台[J].计算机系统应用,2022,31(03):85-94.
+[13] 张林.基于微服务架构的商对客模式电商网站的设计与实现[J].软件工程,2021,24(09):55-57. 
+[14]孙岩,李晶.基于SpringBoot的旅游资源管理网站的设计与实现[J].信息技术与信息化,2021,250(01):37-39.

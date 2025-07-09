@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能面试助手</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #f3f4f6;
+        }
+
+        .model-selector {
+            position: relative;
+        }
+
+        .model-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .model-button:hover {
+            background-color: #f3f4f6;
+        }
+
+        .model-subtitle {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            font-weight: normal;
+            margin-top: -0.25rem;
+        }
+
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            max-width: 48rem;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .greeting {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .greeting h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .greeting p {
+            font-size: 1.125rem;
+            color: #6b7280;
+        }
+
+        /* Search Input */
+        .search-container {
+            width: 100%;
+            max-width: 42rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .search-wrapper:focus-within {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+            padding-right: 3rem;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3b82f6;
+            font-size: 1rem;
+        }
+
+        .upload-button {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f3f4f6;
+            border: none;
+            border-radius: 0.5rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .upload-button:hover {
+            background: #e5e7eb;
+        }
+
+        /* 文件上传区域 */
+        .resume-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #d1d5db;
+            border-radius: 1rem;
+            background-color: white;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 42rem;
+            transition: all 0.3s ease;
+        }
+
+        .resume-upload:hover {
+            border-color: #8b5cf6;
+        }
+
+        .resume-upload i {
+            font-size: 3rem;
+            color: #8b5cf6;
+            margin-bottom: 1rem;
+        }
+
+        .resume-upload p {
+            margin-bottom: 1rem;
+        }
+
+        .resume-upload input[type="file"] {
+            display: none;
+        }
+
+        .upload-action {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            border: 1px solid #8b5cf6;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #8b5cf6;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f5f3ff;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        .btn-outline:hover {
+            background: #f5f3ff;
+        }
+
+        /* 面试流程区域 */
+        .interview-container {
+            display: none;
+            width: 100%;
+            max-width: 42rem;
+        }
+
+        .question-box {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .question-content {
+            font-size: 1.125rem;
+            margin-bottom: 1.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .answer-area {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .answer-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .answer-actions button {
+            padding: 0.5rem 1rem;
+        }
+
+        /* 结果区域 */
+        .result-container {
+            display: none;
+            width: 100%;
+            max-width: 42rem;
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .summary-text {
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .report-link {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 状态提示 */
+        .status {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: #4b5563;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 100;
+            opacity: 0;
+            transform: translateX(2rem);
+            transition: all 0.3s ease;
+        }
+
+        .status.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .status.success {
+            background: #10b981;
+        }
+
+        .status.error {
+            background: #ef4444;
+        }
+
+        .status.loading {
+            background: #6366f1;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .social-link {
+            color: #6b7280;
+            font-size: 1.25rem;
+            transition: color 0.2s;
+        }
+
+        .social-link:hover {
+            color: #8b5cf6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .greeting h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .greeting,
+        .search-container,
+        .resume-upload,
+        .interview-container,
+        .result-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* 加载指示器样式 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e5e7eb;
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .loading-text {
+            color: #374151;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="model-selector">
+                    <button class="model-button" onclick="toggleModelDropdown()">
+                        <div>
+                            <div>智能面试助手</div>
+                            <div class="model-subtitle">简历分析与面试评估</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 全屏加载指示器 -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">处理中，请稍候...</div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="greeting">
+                <h1>智能面试助手</h1>
+                <p>上传简历，开始智能面试评估</p>
+            </div>
+
+            <!-- 简历上传区域 -->
+            <div id="resumeUpload" class="resume-upload">
+                <i class="fas fa-file-pdf"></i>
+                <p>上传您的简历开始面试 (PDF格式)</p>
+                <form id="uploadForm">
+                    <input type="file" id="resumeFile" accept=".pdf">
+                    <div class="upload-action">
+                        <button type="button" class="btn" id="selectFileBtn">
+                            <i class="fas fa-file-import"></i> 选择文件
+                        </button>
+                        <button type="button" class="btn btn-outline" id="startUploadBtn" disabled>
+                            <i class="fas fa-arrow-right"></i> 开始面试
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 面试问答区域 -->
+            <div id="interviewContainer" class="interview-container">
+                <div class="question-box">
+                    <div class="question-header">
+                        <span id="questionNumber">问题 1/6</span>
+                        <span id="questionCategory">背景确认</span>
+                    </div>
+                    <div id="questionContent" class="question-content">
+                        载入中...
+                    </div>
+                    <textarea id="answerArea" class="answer-area" placeholder="请在此输入您的回答..."></textarea>
+                    <div class="answer-actions">
+                        <button class="btn btn-outline" id="aiHelpBtn">
+                            <i class="fas fa-robot"></i> AI辅助回答
+                        </button>
+                        <button class="btn" id="submitAnswerBtn">
+                            <i class="fas fa-paper-plane"></i> 提交回答
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-outline" id="skipRemainingBtn" style="width: 100%;">
+                    <i class="fas fa-fast-forward"></i> 跳过剩余问题，生成报告
+                </button>
+            </div>
+
+            <!-- 结果区域 -->
+            <div id="resultContainer" class="result-container">
+                <div class="result-box">
+                    <div class="result-title">面试评估报告</div>
+                    <div id="summaryText" class="summary-text">
+                        生成报告中，请稍候...
+                    </div>
+                    <div class="report-link">
+                        <a href="#" id="reportLink" class="btn" target="_blank">
+                            <i class="fas fa-file-pdf"></i> 查看完整PDF报告
+                        </a>
+                    </div>
+                </div>
+                <button class="btn" id="newInterviewBtn" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-redo"></i> 开始新的面试
+                </button>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="social-links">
+                <a href="#" class="social-link" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="#" class="social-link" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link" title="Website">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="#" class="social-link" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </footer>
+
+        <!-- 状态提示 -->
+        <div id="statusToast" class="status">
+            <i class="fas fa-info-circle"></i>
+            <span id="statusText">操作成功</span>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentSessionId = null;
+
+        // DOM 元素
+        const resumeUpload = document.getElementById('resumeUpload');
+        const resumeFile = document.getElementById('resumeFile');
+        const selectFileBtn = document.getElementById('selectFileBtn');
+        const startUploadBtn = document.getElementById('startUploadBtn');
+        const interviewContainer = document.getElementById('interviewContainer');
+        const questionNumber = document.getElementById('questionNumber');
+        const questionCategory = document.getElementById('questionCategory');
+        const questionContent = document.getElementById('questionContent');
+        const answerArea = document.getElementById('answerArea');
+        const aiHelpBtn = document.getElementById('aiHelpBtn');
+        const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+        const skipRemainingBtn = document.getElementById('skipRemainingBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const summaryText = document.getElementById('summaryText');
+        const reportLink = document.getElementById('reportLink');
+        const newInterviewBtn = document.getElementById('newInterviewBtn');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const statusToast = document.getElementById('statusToast');
+        const statusText = document.getElementById('statusText');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', function () {
+            // 文件选择按钮
+            selectFileBtn.addEventListener('click', function () {
+                resumeFile.click();
+            });
+
+            // 文件选择监听
+            resumeFile.addEventListener('change', function () {
+                if (resumeFile.files.length > 0) {
+                    const fileName = resumeFile.files[0].name;
+                    selectFileBtn.innerHTML = `<i class="fas fa-file-pdf"></i> ${fileName}`;
+                    startUploadBtn.disabled = false;
+                } else {
+                    selectFileBtn.innerHTML = `<i class="fas fa-file-import"></i> 选择文件`;
+                    startUploadBtn.disabled = true;
+                }
+            });
+
+            // 开始上传按钮
+            startUploadBtn.addEventListener('click', uploadResume);
+
+            // AI辅助回答
+            aiHelpBtn.addEventListener('click', getAIAnswer);
+
+            // 提交回答
+            submitAnswerBtn.addEventListener('click', submitAnswer);
+
+            // 跳过剩余问题
+            skipRemainingBtn.addEventListener('click', skipRemainingQuestions);
+
+            // 开始新面试
+            newInterviewBtn.addEventListener('click', resetInterview);
+
+            // 发送消息
+            sendMessageBtn.addEventListener('click', function () {
+                if (messageInput.value.trim() && resumeFile.files.length > 0 && !currentSessionId) {
+                    uploadResume();
+                }
+            });
+        });
+
+        // 处理消息输入
+        function handleMessageInput(event) {
+            if (event.key === 'Enter' && resumeFile.files.length > 0 && !currentSessionId) {
+                uploadResume();
+            }
+        }
+
+        // 上传简历
+        async function uploadResume() {
+            if (!resumeFile.files || resumeFile.files.length === 0) {
+                showStatus('请选择简历文件', 'error');
+                return;
+            }
+
+            showStatus('正在处理简历中...', 'loading');
+            showLoading('正在分析简历，请稍候...');
+
+            const formData = new FormData();
+            formData.append('file', resumeFile.files[0]);
+
+            try {
+                const response = await fetch('/interview/upload-resume/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || '上传失败');
+                }
+
+                // 保存会话ID
+                currentSessionId = result.session_id;
+
+                // 显示成功消息
+                showStatus('简历分析成功，开始面试', 'success');
+
+                // 隐藏上传区域，显示面试区域
+                resumeUpload.style.display = 'none';
+                interviewContainer.style.display = 'block';
+
+                // 获取第一个问题
+                getNextQuestion();
+
+            } catch (error) {
+                showStatus(`上传失败: ${error.message}`, 'error');
+                console.error('上传错误:', error);
+                hideLoading();
+            }
+        }
+
+        // 获取当前/下一个问题
+        async function getNextQuestion() {
+            if (!currentSessionId) return;
+
+            showStatus('获取问题中...', 'loading');
+            showLoading('正在准备问题...');
+
+            try {
+                const response = await fetch(`/interview/question/?session_id=${currentSessionId}`);
+
+                // 检查响应状态
+                if (!response.ok) {
+                    if (response.status === 500) {
+                        // 服务器内部错误
+                        showStatus('获取问题时出错，请刷新页面重试', 'error');
+                        hideLoading();
+                        return;
+                    }
+                    throw new Error(`服务器返回错误: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.is_completed) {
+                    // 面试已完成，显示报告
+                    showResults(result);
+                    return;
+                }
+
+                hideLoading();
+
+                // 更新问题显示
+                const questionIdx = result.current_question_index;
+                const totalQuestions = result.total_questions;
+
+                questionNumber.textContent = `问题 ${questionIdx + 1}/${totalQuestions}`;
+                questionContent.textContent = result.current_question;
+
+                // 清空回答区域
+                answerArea.value = '';
+
+            } catch (error) {
+                showStatus(`获取问题失败: ${error.message}`, 'error');
+                console.error('获取问题错误:', error);
+                hideLoading();
+            }
+        }
+
+        // 提交回答
+        async function submitAnswer() {
+            if (!currentSessionId) return;
+
+            const answer = answerArea.value.trim();
+            if (!answer) {
+                showStatus('请输入您的回答', 'error');
+                return;
+            }
+
+            // 获取当前问题索引和总问题数
+            const questionText = questionNumber.textContent;
+            const currentIndex = parseInt(questionText.split('/')[0].trim().split(' ')[1]);
+            const totalQuestions = parseInt(questionText.split('/')[1]);
+
+            // 判断是否是最后一个问题
+            const isLastQuestion = (currentIndex === totalQuestions);
+
+            if (isLastQuestion) {
+                showStatus('提交最后一个问题，正在生成报告...', 'loading');
+                showLoading('正在生成面试评估报告，请稍候...');
+            } else {
+                showStatus('提交回答中...', 'loading');
+                showLoading('正在提交您的回答...');
+            }
+
+            try {
+                const response = await fetch(`/interview/answer/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        answer: answer
+                    })
+                });
+
+                // 检查响应状态
+                if (!response.ok) {
+                    if (response.status === 500) {
+                        // 服务器内部错误，可能是生成报告时出错
+                        showStatus('生成报告时出错，请稍后再试', 'error');
+                        hideLoading();
+                        return;
+                    }
+                    throw new Error(`服务器返回错误: ${response.status}`);
+                }
+
+                const result = await response.json();
+                hideLoading();
+
+                if (result.is_completed) {
+                    // 面试已完成，显示报告
+                    showResults(result);
+                    return;
+                }
+
+                // 更新成功提示
+                showStatus('回答已提交', 'success');
+
+                // 获取下一个问题
+                const questionIdx = result.current_question_index;
+                const totalQuestions = result.total_questions;
+
+                questionNumber.textContent = `问题 ${questionIdx + 1}/${totalQuestions}`;
+                questionContent.textContent = result.current_question;
+
+                // 清空回答区域
+                answerArea.value = '';
+
+            } catch (error) {
+                showStatus(`提交回答失败: ${error.message}`, 'error');
+                console.error('提交回答错误:', error);
+                hideLoading();
+
+                // 尝试重新获取当前问题
+                setTimeout(() => {
+                    getNextQuestion();
+                }, 2000);
+            }
+        }
+
+        // 获取AI辅助回答
+        async function getAIAnswer() {
+            if (!currentSessionId) return;
+
+            showStatus('获取AI辅助回答...', 'loading');
+            showLoading('正在生成AI辅助回答...');
+
+            try {
+                // 获取当前问题索引
+                const currentIndex = parseInt(questionNumber.textContent.split('/')[0].trim().split(' ')[1]) - 1;
+
+                const response = await fetch(`/interview/ai-answer/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        question_index: currentIndex
+                    })
+                });
+
+                const result = await response.json();
+                hideLoading();
+
+                // 填充回答区域
+                answerArea.value = result.ai_answer;
+
+                showStatus('AI已生成参考回答', 'success');
+
+            } catch (error) {
+                showStatus(`获取AI回答失败: ${error.message}`, 'error');
+                console.error('AI回答错误:', error);
+                hideLoading();
+            }
+        }
+
+        // 跳过剩余问题
+        async function skipRemainingQuestions() {
+            if (!currentSessionId) return;
+
+            if (!confirm('确定要跳过剩余问题并生成报告吗？')) {
+                return;
+            }
+
+            showStatus('生成报告中...', 'loading');
+            showLoading('正在生成面试评估报告，请稍候...');
+
+            try {
+                const response = await fetch(`/interview/skip-remaining/?session_id=${currentSessionId}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                hideLoading();
+
+                // 显示结果
+                showResults(result);
+
+            } catch (error) {
+                showStatus(`跳过问题失败: ${error.message}`, 'error');
+                console.error('跳过问题错误:', error);
+                hideLoading();
+            }
+        }
+
+        // 显示结果
+        function showResults(result) {
+            // 隐藏加载指示器
+            hideLoading();
+
+            // 隐藏面试区域，显示结果区域
+            interviewContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+
+            // 清空结果容器，只保留标题和报告链接
+            const resultBox = document.querySelector('.result-box');
+            const resultTitle = document.querySelector('.result-title');
+            const reportLinkDiv = document.querySelector('.report-link');
+
+            // 保存原始内容
+            const originalTitle = resultTitle.cloneNode(true);
+            const originalReportLink = reportLinkDiv.cloneNode(true);
+
+            // 清空结果框
+            resultBox.innerHTML = '';
+
+            // 重新添加标题
+            resultBox.appendChild(originalTitle);
+
+            // 创建新的摘要元素
+            const newSummaryText = document.createElement('div');
+            newSummaryText.id = 'summaryText';
+            newSummaryText.className = 'summary-text';
+            newSummaryText.textContent = result.summary || '无法生成面试摘要';
+            resultBox.appendChild(newSummaryText);
+
+            // 添加总分和录用建议显示
+            try {
+                // 检查是否有评分数据
+                if (result.total_score !== undefined && result.total_possible_score !== undefined) {
+                    const scoreDiv = document.createElement('div');
+                    scoreDiv.className = 'score-summary mt-4 p-3 border rounded bg-light';
+                    scoreDiv.innerHTML = `
+                        <h5>总评分</h5>
+                        <p class="mb-2">总分：${result.total_score} / ${result.total_possible_score} (${result.score_percentage || 0}%)</p>
+                        <p class="mb-0 ${(result.hire_recommendation === '建议录用') ? 'text-success' : 'text-danger'}">
+                            <strong>录用建议：${result.hire_recommendation || '无法提供建议'}</strong>
+                        </p>
+                    `;
+                    resultBox.appendChild(scoreDiv);
+                }
+            } catch (e) {
+                console.error("显示评分信息时出错:", e);
+            }
+
+            // 重新添加报告链接
+            resultBox.appendChild(originalReportLink);
+
+            // 更新报告链接
+            const reportLink = document.getElementById('reportLink');
+            if (result.report_path) {
+                reportLink.href = `/interview/report/${currentSessionId}`;
+                reportLink.innerHTML = '<i class="fas fa-file-pdf"></i> 查看完整PDF报告';
+                reportLink.disabled = false;
+            } else {
+                reportLink.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 报告生成失败';
+                reportLink.disabled = true;
+            }
+
+            showStatus('面试评估已完成', 'success');
+        }
+
+        // 重置面试
+        function resetInterview() {
+            // 重置所有状态
+            currentSessionId = null;
+
+            // 重置文件选择
+            resumeFile.value = '';
+            selectFileBtn.innerHTML = `<i class="fas fa-file-import"></i> 选择文件`;
+            startUploadBtn.disabled = true;
+
+            // 显示上传区域，隐藏其他区域
+            resumeUpload.style.display = 'flex';
+            interviewContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+
+            // 清空输入
+            messageInput.value = '';
+            answerArea.value = '';
+
+            // 重置结果容器
+            const resultBox = document.querySelector('.result-box');
+            resultBox.innerHTML = `
+                <div class="result-title">面试评估报告</div>
+                <div id="summaryText" class="summary-text">
+                    生成报告中，请稍候...
+                </div>
+                <div class="report-link">
+                    <a href="#" id="reportLink" class="btn" target="_blank">
+                        <i class="fas fa-file-pdf"></i> 查看完整PDF报告
+                    </a>
+                </div>
+            `;
+
+            showStatus('已准备好新的面试', 'success');
+        }
+
+        // 显示状态提示
+        function showStatus(message, type = 'info') {
+            statusText.textContent = message;
+            statusToast.className = `status ${type} show`;
+
+            // 清除之前的定时器
+            if (window.statusTimeout) {
+                clearTimeout(window.statusTimeout);
+            }
+
+            // 3秒后自动隐藏
+            window.statusTimeout = setTimeout(() => {
+                statusToast.className = 'status';
+            }, 3000);
+        }
+
+        // 显示加载指示器
+        function showLoading(message = '处理中，请稍候...') {
+            // 更新加载文本
+            document.querySelector('.loading-text').textContent = message;
+            // 显示加载覆盖层
+            loadingOverlay.classList.add('active');
+        }
+
+        // 隐藏加载指示器
+        function hideLoading() {
+            // 隐藏加载覆盖层
+            loadingOverlay.classList.remove('active');
+        }
+
+        // Sidebar 和 Model dropdown 功能暂不实现
+        function toggleSidebar() {
+            // 返回到聊天页面
+            window.location.href = '/';
+        }
+
+    </script>
+</body>
+
+</html>
